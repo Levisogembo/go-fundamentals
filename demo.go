@@ -26,6 +26,6 @@ func main() {
 	// default:
 	// 	fmt.Printf("no typs\t")
 	// }
-	fmt.Println(try("levi"), a)
+	fmt.Println(try("Golang"), a)
 
 }
