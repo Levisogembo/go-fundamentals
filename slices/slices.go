@@ -15,6 +15,7 @@ func main() {
 	//creating slice without an underlying array
 	slice := []string{"hello", "world"}
 	//appending to a slice
+	//when appending it checks the capacity before adding, if there is no capacity the size of the underlying array is doubled
 	for x := 0; x < 10; x++ {
 		slice = append(slice, "time")
 		fmt.Println(slice, len(slice), cap(slice))
