@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sync"
 	"time"
 )
 
@@ -23,6 +24,24 @@ func run3() {
 func add(x int, y int, ch chan int) {
 	//fmt.Println(x + y)
 	ch <- x + y
+}
+
+func r(ch chan bool) {
+	<-ch
+}
+
+type Counter struct {
+	value int
+	lock  sync.Mutex //implementing locks and mutexes to prevent multiple threads from accessing the same memory address and changing it at the same time
+}
+
+func count(counter *Counter, wg *sync.WaitGroup) {
+	counter.lock.Lock() //acquiring the counter
+	defer counter.lock.Unlock()
+	counter.value++
+	fmt.Println(counter.value)
+	//ch <- true
+	wg.Done()
 }
 
 func main() {
@@ -54,5 +73,31 @@ func main() {
 		}
 	}
 
+	//implementing buffer channels
+	ch3 := make(chan bool, 2) // creating a buffered channel that can receive 2 different values
+	//go r(ch3)
+	ch3 <- true
+	<-ch3
+	fmt.Println("done")
+
+	counter := Counter{}
+	//counterChanel := make(chan bool)
+
+	wg := sync.WaitGroup{} //creating a wait group
+	wg.Add(100)            //adding 100 go routines to wait for
+
+	for i := 0; i < 100; i++ {
+		go count(&counter, &wg)
+	}
+	//waiting for results to finish
+	//1. using channels
+	// for i := 0; i < 100; i++ {
+	// 	<-counterChanel //await for all go routines to finish
+	// }
+	//2. using time sleep
+	//time.Sleep(2 * time.Second)
+
+	//3. using a wait group
+	wg.Wait()
 	//fmt.Println(x, y)
 }
